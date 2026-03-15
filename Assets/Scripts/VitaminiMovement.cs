@@ -251,4 +251,20 @@ public class VitaminiMovement : MonoBehaviour
     }
 
 
+
+
+    private void OnCollisionEnter2D(Collision2D infoCollision)
+    {   
+        //Tengo que entrar en el collider, desde una colisión inicial,
+        //para llegar finalmente al Tag llamado Acorn del objeto
+        if (infoCollision.collider.CompareTag("Acorn"))
+        {   
+            //Destruyo el objeto con el que colisione y que tenía ese Tag específico
+            Destroy(infoCollision.collider.gameObject);
+
+        }
+
+    }
+
+
 }
