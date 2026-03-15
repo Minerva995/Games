@@ -25,19 +25,36 @@ public class AntMovement : MonoBehaviour
 
 
     private SpriteRenderer _spriteRenderer;
+    private Animator _anim;
+    [SerializeField]
+    private GameObject _player;
 
 
     //Velocidad inicial de la hormiga
     [SerializeField]
     private float _speed;
-    
-    
+
+    //Velocidad normal de la hormiga
+    [SerializeField]
+    private float _speedWalking;
+
+    [SerializeField]
+    private float _speedAttack;
+
+    [SerializeField]
+    private float _speedAnimation;
+
+    [SerializeField]
+    private float _distanceToPlayer;
+
 
     private void Awake()
     {
-        _speed = 3.0f;
+        _speed = _speedWalking;
 
         _spriteRenderer = GetComponent<SpriteRenderer>();
+
+        _anim = GetComponent<Animator>();
 
         //Inicializamos el "array" de posiciones con el tamaño que tiene es de los "wayPoints"
         _positionsArray = new Vector2[_wayPointsArray.Length];
@@ -64,7 +81,27 @@ public class AntMovement : MonoBehaviour
     void Update()
     {
 
-        ChangeTargetPos();
+        //Dibujo una linea para observar la distancia de deteccion
+        Debug.DrawLine(transform.position, _player.transform.position, Color.red);
+
+
+        //Indicamos que si la distancia que hay entre el player y en enemigo,
+        //es menor a "_distanceToPlayer"(ouede ser por ejemplo 2m),
+        //entonces el enemigo debe detectar y atacar
+        if (Vector2.Distance(transform.position, _player.transform.position) <= _distanceToPlayer)
+        {
+
+            AttackPlayer();
+        }
+
+        //Si el enemigo no detecta al player, que siga patrullando
+
+        else
+        {
+
+            ChangeTargetPos();
+        }
+
 
         //El "MoveTowards" cambia el valor de un vector desde el valor en el que se encuentra
         //hasta el valor que queramos
@@ -78,6 +115,11 @@ public class AntMovement : MonoBehaviour
 
     private void ChangeTargetPos()
     {
+
+        _speed = _speedWalking;
+        _anim.speed = 1.0f;
+
+
 
         //Preguntamos si hemos llegado a nuestro destino, que es uno de los Waypoints
         if(transform.position == _posToGo)
@@ -130,6 +172,20 @@ public class AntMovement : MonoBehaviour
         }
 
     }
+
+
+
+    public void AttackPlayer()
+    {
+        //Que la velocidad normal se vea modificada por la velocidad de ataque
+        _speed = _speedAttack;
+
+        //Si ve al player aumente su velocidad el clip de animación de la hormiga
+        _anim.speed = _speedAnimation;
+
+        _posToGo = new Vector2(_player.transform.position.x, _posToGo.y);
+    }
+
 
 
 
